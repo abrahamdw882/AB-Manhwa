@@ -189,7 +189,7 @@
         <p>© 2024 AB ANIME. All rights reserved.</p>
     </footer>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
             fetchManga(); 
             document.getElementById('searchButton').addEventListener('click', searchManga);
         });
@@ -237,29 +237,41 @@
             }
         }
 
-        function displayManga(data) {
+        function validateImageUrl(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+            });
+        }
+
+        async function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
             mangaList.innerHTML = '';  // Clear previous entries
 
-            data.forEach(manga => {
+            for (const manga of data) {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
 
                 // Log the properties to debug
                 console.log(`Displaying: ${manga.title}, Cover URL: ${manga.cover}`);
 
-                // Create the HTML structure with a fallback image
+                // Validate the image URL
+                const isValidImage = await validateImageUrl(manga.cover);
+
+                // Create the HTML structure with a fallback image if the cover URL is invalid
+                const coverImage = isValidImage ? manga.cover : 'default-image.jpg';
+
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${manga.cover}" alt="${manga.title}" 
-                             onerror="this.onerror=null;this.src='default-image.jpg';" 
-                             loading="lazy">
+                        <img src="${coverImage}" alt="${manga.title}" loading="lazy">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
 
                 mangaList.appendChild(mangaItem);
-            });
+            }
         }
 
         function handleError(error) {
