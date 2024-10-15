@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
-        /* General Styles */
+       
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f0f0f0 0%, #c1c1c1 100%);
@@ -52,7 +52,7 @@
             color: #ffcc00;
         }
 
-        /* Main content styles */
+  
         main {
             margin: 40px auto;
             display: flex;
@@ -61,7 +61,6 @@
             max-width: 1200px;
         }
 
-        /* Search Bar Styles */
         #searchContainer {
             display: flex;
             justify-content: center;
@@ -108,8 +107,6 @@
         #searchButton:hover {
             background-color: #e0b700;
         }
-
-        /* Manga List Styles */
         .manga-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -144,7 +141,7 @@
             text-align: center;
         }
 
-        /* Footer Styles */
+      
         footer {
             text-align: center;
             padding: 20px;
@@ -185,11 +182,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetchManga(); // Load initial manga list
+            fetchManga(); 
             document.getElementById('searchButton').addEventListener('click', searchManga);
         });
 
-        // Function to fetch manga list
+    
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
@@ -200,7 +197,6 @@
                 .catch(handleError);
         }
 
-        // Function to search manga
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
@@ -212,14 +208,13 @@
                     .then(data => displayManga(data))
                     .catch(handleError);
             } else {
-                fetchManga(); // If no query, just fetch the manga list
+                fetchManga(); 
             }
         }
 
-        // Function to display manga
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = ''; // Clear previous results
+            mangaList.innerHTML = ''; 
 
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
@@ -236,7 +231,7 @@
             });
         }
 
-        // Error handling
+   
         function handleError(error) {
             console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
