@@ -23,6 +23,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         header h1 {
+            font-family: 'Poppins', sans-serif;
             font-size: 24px;
             letter-spacing: 1px;
         }
@@ -188,26 +189,25 @@
     <footer>
         <p>© 2024 AB ANIME. All rights reserved.</p>
     </footer>
+
     <script>
+        let page = 1; // Start at page 1
+        let isLoading = false; // To prevent multiple loads
+
         document.addEventListener('DOMContentLoaded', () => {
             fetchManga(); // Load initial manga list
             document.getElementById('searchButton').addEventListener('click', searchManga);
         });
 
-        // Function to fetch manga list
+        // Function to fetch manga list with pagination
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
-                .then(data => {
-                    console.log('Fetched manga data:', data); // Added logging for fetched data
-                    displayManga(data);
-                })
-                .catch(error => {
-                    handleError(error);
-                });
+                .then(data => displayManga(data))
+                .catch(handleError);
         }
 
         // Function to search manga
@@ -219,29 +219,19 @@
                 const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
                 fetch(proxyUrl + encodeURIComponent(apiUrl))
                     .then(response => response.json())
-                    .then(data => {
-                        console.log('Searched manga data:', data); // Added logging for searched data
-                        displayManga(data);
-                    })
-                    .catch(error => {
-                        handleError(error);
-                    });
+                    .then(data => displayManga(data))
+                    .catch(handleError);
             } else {
-                fetchManga(); // If no query, just fetch the manga list
+                fetchManga(); // If no query, load the default manga list
             }
         }
 
         // Function to display manga
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = ''; // Clear previous results
-
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
-
-                // Log each manga's title and cover URL for debugging
-                console.log(`Displaying: ${manga.title}, Cover URL: ${manga.cover}`);
 
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
@@ -254,9 +244,23 @@
             });
         }
 
-        // Error handling function
+        // Infinite scrolling
+        window.addEventListener("scroll", function () {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
+                isLoading = true; // Prevent multiple loads
+                page += 1; // Increment the page count
+                fetchManga(page); // Fetch the next page
+                isLoading = false;
+            }
+        });
+
+        // Error handling
         function handleError(error) {
-            console.error('Error fetching data:', error);
+            console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
         }
     </script>
