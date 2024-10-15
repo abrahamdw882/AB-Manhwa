@@ -191,15 +191,15 @@
     </footer>
 
     <script>
-        let page = 1; // Start at page 1
-        let isLoading = false; // To prevent multiple loads
+        let page = 1; 
+        let isLoading = false; 
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchManga(); // Load initial manga list
+            fetchManga(); 
             document.getElementById('searchButton').addEventListener('click', searchManga);
         });
 
-        // Function to fetch manga list with pagination
+       
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
@@ -210,7 +210,7 @@
                 .catch(handleError);
         }
 
-        // Function to search manga
+       
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
@@ -222,11 +222,11 @@
                     .then(data => displayManga(data))
                     .catch(handleError);
             } else {
-                fetchManga(); // If no query, load the default manga list
+                fetchManga(); 
             }
         }
 
-        // Function to display manga
+        
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
             data.forEach(manga => {
