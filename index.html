@@ -248,10 +248,12 @@
                 // Log the properties to debug
                 console.log(`Displaying: ${manga.title}, Cover URL: ${manga.cover}`);
 
-                // Create the HTML structure
+                // Create the HTML structure with a fallback image
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${manga.cover}" alt="${manga.title}" onerror="this.onerror=null;this.src='default-image.jpg';">
+                        <img src="${manga.cover}" alt="${manga.title}" 
+                             onerror="this.onerror=null;this.src='default-image.jpg';" 
+                             loading="lazy">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
