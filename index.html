@@ -124,10 +124,6 @@
             color: #333;
             text-align: center;
         }
-        .error-message {
-            color: red;
-            margin: 20px;
-        }
         footer {
             text-align: center;
             padding: 20px;
@@ -187,7 +183,6 @@
             <input type="text" id="searchInput" placeholder="Search for manga...">
             <button id="searchButton">Search</button>
         </div>
-        <div id="errorMessage" class="error-message"></div>
         <div id="mangaList" class="manga-list"></div>
     </main>
     <footer>
@@ -204,22 +199,17 @@
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
             fetch(proxyUrl + encodeURIComponent(apiUrl))
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
+                    console.log('Fetched manga data:', data); 
                     if (Array.isArray(data)) {
-                        console.log(`Fetched ${data.length} manga items`);
                         displayManga(data);
                     } else {
                         handleError('Data format is incorrect.');
                     }
                 })
                 .catch(error => {
-                    handleError(`Error fetching manga: ${error.message}`);
+                    handleError(error);
                 });
         }
 
@@ -230,43 +220,38 @@
             if (query) {
                 const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
                 fetch(proxyUrl + encodeURIComponent(apiUrl))
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
+                        console.log('Searched manga data:', data); 
                         if (Array.isArray(data)) {
-                            console.log(`Searched ${data.length} manga items for query "${query}"`);
                             displayManga(data);
                         } else {
                             handleError('Search returned incorrect data format.');
                         }
                     })
                     .catch(error => {
-                        handleError(`Error searching manga: ${error.message}`);
+                        handleError(error);
                     });
             } else {
-                fetchManga(); // Fetch all manga if the query is empty
-                clearError(); // Clear any previous error messages
+                fetchManga();
             }
         }
 
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = ''; 
+            mangaList.innerHTML = '';  // Clear previous entries
 
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
 
-                // Logging specific properties: title and cover
-                console.log(`Displaying: Title: "${manga.title}", Cover URL: "${manga.cover}"`);
+                // Log the properties to debug
+                console.log(`Displaying: ${manga.title}, Cover URL: ${manga.cover}`);
 
+                // Create the HTML structure
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${manga.cover}" alt="${manga.title}">
+                        <img src="${manga.cover}" alt="${manga.title}" onerror="this.onerror=null;this.src='default-image.jpg';">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
@@ -277,11 +262,7 @@
 
         function handleError(error) {
             console.error('Error fetching data:', error);
-            document.getElementById('errorMessage').innerText = error; // Display the error message
-        }
-
-        function clearError() {
-            document.getElementById('errorMessage').innerText = ''; // Clear any previous error messages
+            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
         }
     </script>
 </body>
