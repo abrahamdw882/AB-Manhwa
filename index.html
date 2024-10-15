@@ -188,96 +188,96 @@
     <footer>
         <p>© 2024 AB ANIME. All rights reserved.</p>
     </footer>
-    <script>
-  document.addEventListener('DOMContentLoaded', () => {
-            fetchManga(); 
-            document.getElementById('searchButton').addEventListener('click', searchManga);
-        });
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchManga(); 
+        document.getElementById('searchButton').addEventListener('click', searchManga);
+    });
 
-        function fetchManga(page = 1) {
-            const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
-            const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
+    function fetchManga(page = 1) {
+        const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+        const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
+        fetch(proxyUrl + encodeURIComponent(apiUrl))
+            .then(response => response.json())
+            .then(data => {
+                console.log('Fetched manga data:', data); 
+                if (Array.isArray(data)) {
+                    displayManga(data);
+                } else {
+                    handleError('Data format is incorrect.');
+                }
+            })
+            .catch(error => {
+                handleError(error);
+            });
+    }
+
+    function searchManga() {
+        const query = document.getElementById('searchInput').value.trim();
+        const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+
+        if (query) {
+            const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Fetched manga data:', data); 
+                    console.log('Searched manga data:', data); 
                     if (Array.isArray(data)) {
                         displayManga(data);
                     } else {
-                        handleError('Data format is incorrect.');
+                        handleError('Search returned incorrect data format.');
                     }
                 })
                 .catch(error => {
                     handleError(error);
                 });
+        } else {
+            fetchManga();
         }
+    }
 
-        function searchManga() {
-            const query = document.getElementById('searchInput').value.trim();
-            const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+    function displayManga(data) {
+        const mangaList = document.getElementById('mangaList');
+        mangaList.innerHTML = ''; 
 
-            if (query) {
-                const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
-                fetch(proxyUrl + encodeURIComponent(apiUrl))
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Searched manga data:', data); 
-                        if (Array.isArray(data)) {
-                            displayManga(data);
-                        } else {
-                            handleError('Search returned incorrect data format.');
-                        }
-                    })
-                    .catch(error => {
-                        handleError(error);
-                    });
-            } else {
-                fetchManga();
-            }
-        }
+        data.forEach(manga => {
+            const mangaItem = document.createElement('div');
+            mangaItem.className = 'manga-item';
 
-        function validateImageUrl(url) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-            });
-        }
+            // Extract cover image URL, if it's in the format you specified
+            const coverUrl = extractCoverUrl(manga);
 
-        async function displayManga(data) {
-            const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = '';  // Clear previous entries
-
-            for (const manga of data) {
-                const mangaItem = document.createElement('div');
-                mangaItem.className = 'manga-item';
-
-                // Log the properties to debug
-                console.log(`Displaying: ${manga.title}, Cover URL: ${manga.cover}`);
-
-                // Validate the image URL
-                const isValidImage = await validateImageUrl(manga.cover);
-
-                // Create the HTML structure with a fallback image if the cover URL is invalid
-                const coverImage = isValidImage ? manga.cover : 'default-image.jpg';
+            if (coverUrl) {
+                console.log(`Displaying: ${manga.title}, Cover URL: ${coverUrl}`);
 
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${coverImage}" alt="${manga.title}" loading="lazy">
+                        <img src="${coverUrl}" alt="${manga.title}">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
-
-                mangaList.appendChild(mangaItem);
+            } else {
+                console.error(`Cover image not found for manga: ${manga.title}`);
             }
-        }
 
-        function handleError(error) {
-            console.error('Error fetching data:', error);
-            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+            mangaList.appendChild(mangaItem);
+        });
+    }
+
+    function extractCoverUrl(manga) {
+        // Check if the manga has a cover property and return it
+        if (manga && manga.cover) {
+            return manga.cover; // Return the cover URL directly
         }
-    </script>
+        return null; // Return null if no cover URL is found
+    }
+
+    function handleError(error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+    }
+</script>
+
 </body>
 </html>
