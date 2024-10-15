@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manga </title>
+    <title>Manga Gallery</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -96,6 +96,21 @@
         #searchButton:hover {
             background-color: #e0b700;
         }
+        #sliderContainer {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 40px;
+        }
+        .mySlides {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .mySlides img {
+            width: 100%;
+            height: auto;
+        }
         .manga-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -180,6 +195,18 @@
         </nav>
     </header>
     <main>
+        <div id="sliderContainer">
+            <div class="mySlides" style="display: flex;">
+                <img src="slide1_image_url" alt="Slide 1">
+                <h3>Trending Manga Title 1</h3>
+            </div>
+            <div class="mySlides">
+                <img src="slide2_image_url" alt="Slide 2">
+                <h3>Trending Manga Title 2</h3>
+            </div>
+        </div>
+        <button onclick="plusSlides(-1)">&#10094;</button>
+        <button onclick="plusSlides(1)">&#10095;</button>
         <div id="searchContainer">
             <input type="text" id="searchInput" placeholder="Search for manga...">
             <button id="searchButton">Search</button>
@@ -193,24 +220,29 @@
     <script>
         let page = 1; 
         let isLoading = false; 
+        let slideIndex = 0; 
+        let clickes = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchManga(); 
             document.getElementById('searchButton').addEventListener('click', searchManga);
+            showSlides(slideIndex);
+            showSlides2();
         });
 
-       
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
-                .then(data => displayManga(data))
+                .then(data => {
+                    displayManga(data);
+                    setupSlider(data);
+                })
                 .catch(handleError);
         }
 
-       
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
@@ -226,9 +258,10 @@
             }
         }
 
-        
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
+            mangaList.innerHTML = '';
+
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
@@ -244,21 +277,63 @@
             });
         }
 
-        // Infinite scrolling
+        function setupSlider(data) {
+            const sliderContainer = document.getElementById('sliderContainer');
+            sliderContainer.innerHTML = '';
+
+            data.forEach((manga, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'mySlides';
+                slide.innerHTML = `
+                    <img src="${manga.cover}" alt="${manga.title}">
+                    <h3>${manga.title}</h3>
+                `;
+                sliderContainer.appendChild(slide);
+            });
+
+            showSlides(slideIndex);
+        }
+
+        function showSlides(n) {
+            const slides = document.getElementsByClassName("mySlides");
+            if (n >= slides.length) {slideIndex = 0}    
+            if (n < 0) {slideIndex = slides.length - 1}    
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slides[slideIndex].style.display = "flex";  
+        }
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides2() {
+            const slides = document.getElementsByClassName("mySlides");
+            if (clickes >= slides.length) {
+                clickes = 0;
+            }
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slides[clickes].style.display = "flex";  
+            clickes++;
+            setTimeout(showSlides2, 3000);
+        }
+
         window.addEventListener("scroll", function () {
             const scrollPosition = window.scrollY;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
             if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
-                isLoading = true; // Prevent multiple loads
-                page += 1; // Increment the page count
-                fetchManga(page); // Fetch the next page
+                isLoading = true; 
+                page += 1; 
+                fetchManga(page); 
                 isLoading = false;
             }
         });
 
-        // Error handling
         function handleError(error) {
             console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
