@@ -121,30 +121,39 @@ footer {
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    fetchManga(); // Fetch manga data when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchManga(); // Load initial manga list
     document.getElementById('searchButton').addEventListener('click', searchManga);
 });
 
+// Function to fetch manga list
 function fetchManga(page = 1) {
-    fetch(`https://ab-manga-api.vercel.app/manga?page=${page}`)
+    const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+    const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
+
+    fetch(proxyUrl + encodeURIComponent(apiUrl))
         .then(response => response.json())
         .then(data => displayManga(data))
         .catch(handleError);
 }
 
+// Function to search manga
 function searchManga() {
     const query = document.getElementById('searchInput').value.trim();
+    const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+    
     if (query) {
-        fetch(`https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`)
+        const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
+        fetch(proxyUrl + encodeURIComponent(apiUrl))
             .then(response => response.json())
             .then(data => displayManga(data))
             .catch(handleError);
     } else {
-        fetchManga(); // If no query, fetch the main manga list
+        fetchManga(); // If no query, just fetch the manga list
     }
 }
 
+// Function to display manga
 function displayManga(data) {
     const mangaList = document.getElementById('mangaList');
     mangaList.innerHTML = ''; // Clear previous results
@@ -161,10 +170,12 @@ function displayManga(data) {
     });
 }
 
+// Error handling
 function handleError(error) {
     console.error('Error:', error);
     document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
 }
+
 
     </script>
 </body>
