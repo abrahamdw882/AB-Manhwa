@@ -115,7 +115,7 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
         .manga-item img {
-            width: 100%;
+            width: 100%; /* Ensuring image width is 100% */
             height: auto;
             border-bottom: 2px solid #f8f9fa;
         }
@@ -239,11 +239,12 @@
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
             data.forEach(manga => {
+                const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); // Remove dimensions if present
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${manga.cover}" alt="${manga.title}">
+                        <img src="${cover}" alt="${manga.title}" style="width: 100%;">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
