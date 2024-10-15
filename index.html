@@ -1,3 +1,5 @@
+
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
+ 
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
@@ -90,7 +93,6 @@
             color: white;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
 </head>
 <body>
     <header>
@@ -107,6 +109,8 @@
         </nav>
     </header>
     <main>
+        <input type="text" id="searchInput" placeholder="Search for manga..." />
+        <button id="searchButton">Search</button>
         <div id="mangaList" class="manga-list"></div>
     </main>
     <footer>
@@ -115,40 +119,49 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             fetchManga();
+            document.getElementById('searchButton').addEventListener('click', searchManga);
         });
 
-        function fetchManga() {
-            fetch('https://ab-manga-api.vercel.app/manga') // Fetch the manga list from your API
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const mangaList = document.getElementById('mangaList');
-                    mangaList.innerHTML = ''; // Clear any previous results
-                    if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(manga => {
-                            const mangaItem = document.createElement('div');
-                            mangaItem.className = 'manga-item';
-                            mangaItem.innerHTML = `
-                                <a href="https://ab-manga-api.vercel.app/manga/${manga.id}">
-                                    <img src="${manga.cover}" alt="${manga.title}">
-                                    <h3>${manga.title}</h3>
-                                </a>
-                            `;
-                            mangaList.appendChild(mangaItem);
-                        });
-                    } else {
-                        mangaList.innerHTML = '<p>No manga found.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
-                });
+        function fetchManga(page = 1) {
+            fetch(`https://ab-manga-api.vercel.app/manga?page=${page}`)
+                .then(response => response.json())
+                .then(data => displayManga(data))
+                .catch(handleError);
         }
-    </script> <!-- Link to your JavaScript -->
+
+        function searchManga() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                fetch(`https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => displayManga(data))
+                    .catch(handleError);
+            } else {
+                fetchManga(); // If no query, just fetch the manga list
+            }
+        }
+
+        function displayManga(data) {
+            const mangaList = document.getElementById('mangaList');
+            mangaList.innerHTML = ''; // Clear previous results
+            data.forEach(manga => {
+                const mangaItem = document.createElement('div');
+                mangaItem.className = 'manga-item';
+                mangaItem.innerHTML = `
+                    <a href="https://ab-manga-api.vercel.app/manga/${manga.manga_id}">
+                        <img src="${manga.cover}" alt="${manga.title}">
+                        <h3>${manga.title}</h3>
+                    </a>
+                `;
+                mangaList.appendChild(mangaItem);
+            });
+        }
+
+        function handleError(error) {
+            console.error('Error:', error);
+            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        }
+    </script>
 </body>
 </html>
+
