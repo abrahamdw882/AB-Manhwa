@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        main {
+            margin: 20px;
+        }
+
+        .manga-details {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .manga-details img {
+            max-width: 200px;
+            height: auto;
+            float: left;
+            margin-right: 20px;
+        }
+
+        .chapter-list {
+            margin-top: 20px;
+        }
+
+        .chapter-item {
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Manga Info</h1>
+        </div>
+    </header>
+
+    <main>
+        <div id="mangaDetails" class="manga-details"></div>
+        <div id="chapterList" class="chapter-list"></div>
+    </main>
+
+    <footer>
+        <p>© 2024 AB ANIME. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mangaId = new URLSearchParams(window.location.search).get('id');
+            if (mangaId) {
+                fetchMangaDetails(mangaId);
+            } else {
+                document.getElementById('mangaDetails').innerHTML = '<p>No manga selected.</p>';
+            }
+        });
+
+        // Function to fetch manga details
+        function fetchMangaDetails(mangaId) {
+            const proxyUrl = 'https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=';
+            const apiUrl = `https://ab-manga-api.vercel.app/manga/${mangaId}`;
+
+            fetch(proxyUrl + encodeURIComponent(apiUrl))
+                .then(response => response.json())
+                .then(data => displayMangaDetails(data))
+                .catch(handleError);
+        }
+
+        // Function to display manga details
+        function displayMangaDetails(data) {
+            const mangaDetails = document.getElementById('mangaDetails');
+            const chapterList = document.getElementById('chapterList');
+
+            // Display manga details
+            mangaDetails.innerHTML = `
+                <img src="${data.cover}" alt="${data.title}" onerror="this.onerror=null; this.src='fallback_image_url_here';">
+                <h2>${data.title}</h2>
+                <p>${data.description}</p>
+                <p><strong>Release Date:</strong> ${data.release_date}</p>
+            `;
+
+            // Display chapter list
+            chapterList.innerHTML = '<h3>Chapters</h3>';
+            data.chapters.forEach(chapter => {
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'chapter-item';
+                chapterItem.innerHTML = `
+                    <strong>${chapter.title}</strong>
+                    <p>Release Date: ${chapter.release_date}</p>
+                    <a href="manga/${data.id}/${chapter.id}">Read Chapter</a>
+                `;
+                chapterList.appendChild(chapterItem);
+            });
+        }
+
+        // Error handling
+        function handleError(error) {
+            console.error('Error:', error);
+            document.getElementById('mangaDetails').innerHTML = '<p>Error fetching manga details. Please try again.</p>';
+        }
+    </script>
+</body>
+</html>
