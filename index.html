@@ -101,8 +101,8 @@
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 30px;
             width: 100%;
-            transition: opacity 0.5s; /* Smooth transition */
             opacity: 1;
+            transition: opacity 0.5s; /* Smooth transition */
         }
         .manga-item {
             border: none;
@@ -244,7 +244,7 @@
                     mangaList.appendChild(mangaItem);
                 });
                 mangaList.style.opacity = 1; // Fade in
-            }, 500); // Adjust this delay to match the CSS transition duration
+            }, 300); // Adjust this delay to match the CSS transition duration
         }
 
         window.addEventListener("scroll", function () {
