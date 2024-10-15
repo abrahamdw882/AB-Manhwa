@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
-       
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f0f0f0 0%, #c1c1c1 100%);
@@ -13,7 +12,6 @@
             padding: 0;
             color: #333;
         }
-
         header {
             background-color: #23242a;
             color: white;
@@ -23,36 +21,29 @@
             justify-content: space-between;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         header h1 {
             font-family: 'Poppins', sans-serif;
             font-size: 24px;
             letter-spacing: 1px;
         }
-
         nav ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
             display: flex;
         }
-
         nav ul li {
             margin-left: 20px;
         }
-
         nav ul li a {
             color: white;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
         }
-
         nav ul li a:hover {
             color: #ffcc00;
         }
-
-  
         main {
             margin: 40px auto;
             display: flex;
@@ -60,14 +51,12 @@
             align-items: center;
             max-width: 1200px;
         }
-
         #searchContainer {
             display: flex;
             justify-content: center;
             margin-bottom: 40px;
             position: relative;
         }
-
         #searchInput {
             width: 400px;
             padding: 15px;
@@ -80,16 +69,13 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s;
         }
-
         #searchInput::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
-
         #searchInput:focus {
             outline: none;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
-
         #searchButton {
             position: absolute;
             right: 10px;
@@ -103,7 +89,6 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         #searchButton:hover {
             background-color: #e0b700;
         }
@@ -113,7 +98,6 @@
             gap: 30px;
             width: 100%;
         }
-
         .manga-item {
             border: none;
             border-radius: 10px;
@@ -122,26 +106,21 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
         }
-
         .manga-item:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
-
         .manga-item img {
             width: 100%;
             height: auto;
             border-bottom: 2px solid #f8f9fa;
         }
-
         .manga-item h3 {
             margin: 10px;
             font-size: 16px;
             color: #333;
             text-align: center;
         }
-
-      
         footer {
             text-align: center;
             padding: 20px;
@@ -153,7 +132,6 @@
     </style>
 </head>
 <body>
-
     <header>
         <div class="logo">
             <h1>Manga Gallery</h1>
@@ -167,7 +145,6 @@
             </ul>
         </nav>
     </header>
-
     <main>
         <div id="searchContainer">
             <input type="text" id="searchInput" placeholder="Search for manga...">
@@ -175,22 +152,18 @@
         </div>
         <div id="mangaList" class="manga-list"></div>
     </main>
-
     <footer>
         <p>© 2024 AB ANIME. All rights reserved.</p>
     </footer>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             fetchManga(); 
             document.getElementById('searchButton').addEventListener('click', searchManga);
         });
 
-    
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
-
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
                 .then(data => displayManga(data))
@@ -200,7 +173,6 @@
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
-
             if (query) {
                 const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
                 fetch(proxyUrl + encodeURIComponent(apiUrl))
@@ -208,7 +180,7 @@
                     .then(data => displayManga(data))
                     .catch(handleError);
             } else {
-                fetchManga(); 
+                fetchManga();
             }
         }
 
@@ -219,19 +191,17 @@
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
-
+                console.log(`Cover URL: ${manga.cover}`); // Log URLs
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
-                        <img src="${manga.cover}" alt="${manga.title}" onerror="this.onerror=null;this.src='fallback_image_url_here';">
+                        <img src="${manga.cover}" alt="${manga.title}">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
-
                 mangaList.appendChild(mangaItem);
             });
         }
 
-   
         function handleError(error) {
             console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
