@@ -53,40 +53,6 @@
             max-width: 1200px;
             padding: 0 20px;
         }
-        #sliderContainer {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 20px; /* Adjusted to reduce space */
-        }
-        .mySlides {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            position: relative; /* Added to position buttons */
-        }
-        .mySlides img {
-            width: 100%;
-            height: 400px; /* Set a fixed height */
-            object-fit: cover; /* Ensures images cover the area */
-        }
-        .prev, .next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(255, 255, 255, 0.8);
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1;
-            font-size: 24px;
-        }
-        .prev {
-            left: 10px;
-        }
-        .next {
-            right: 10px;
-        }
         #searchContainer {
             display: flex;
             justify-content: center;
@@ -214,27 +180,10 @@
         </nav>
     </header>
     <main>
-        <!-- Slider Container -->
-        <div id="sliderContainer">
-            <div class="mySlides" style="display: flex;">
-                <img src="slide1_image_url" alt="Slide 1">
-                <h3>Trending Manga Title 1</h3>
-            </div>
-            <div class="mySlides">
-                <img src="slide2_image_url" alt="Slide 2">
-                <h3>Trending Manga Title 2</h3>
-            </div>
-            <button class="prev" onclick="plusSlides(-1)">&#10094;</button>
-            <button class="next" onclick="plusSlides(1)">&#10095;</button>
-        </div>
-
-        <!-- Search Container -->
         <div id="searchContainer">
             <input type="text" id="searchInput" placeholder="Search for manga...">
             <button id="searchButton">Search</button>
         </div>
-
-        <!-- Manga List -->
         <div id="mangaList" class="manga-list"></div>
     </main>
     <footer>
@@ -242,31 +191,26 @@
     </footer>
 
     <script>
-        let page = 1; 
-        let isLoading = false; 
-        let slideIndex = 0; 
-        let clickes = 0;
+        let page = 1; // Start at page 1
+        let isLoading = false; // To prevent multiple loads
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchManga(); 
+            fetchManga(); // Load initial manga list
             document.getElementById('searchButton').addEventListener('click', searchManga);
-            showSlides(slideIndex);
-            showSlides2();
         });
 
+        // Function to fetch manga list with pagination
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
-                .then(data => {
-                    displayManga(data);
-                    setupSlider(data);
-                })
+                .then(data => displayManga(data))
                 .catch(handleError);
         }
 
+        // Function to search manga
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
@@ -278,14 +222,13 @@
                     .then(data => displayManga(data))
                     .catch(handleError);
             } else {
-                fetchManga(); 
+                fetchManga(); // If no query, load the default manga list
             }
         }
 
+        // Function to display manga
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = '';
-
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
@@ -301,64 +244,21 @@
             });
         }
 
-        function setupSlider(data) {
-            const sliderContainer = document.getElementById('sliderContainer');
-            const slides = sliderContainer.getElementsByClassName('mySlides');
-            Array.from(slides).forEach(slide => slide.remove()); // Clear existing slides
-
-            data.forEach((manga) => {
-                const slide = document.createElement('div');
-                slide.className = 'mySlides';
-                slide.innerHTML = `
-                    <img src="${manga.cover}" alt="${manga.title}">
-                    <h3>${manga.title}</h3>
-                `;
-                sliderContainer.insertBefore(slide, sliderContainer.lastElementChild); // Insert before buttons
-            });
-
-            showSlides(slideIndex);
-        }
-
-        function showSlides(n) {
-            const slides = document.getElementsByClassName("mySlides");
-            if (n >= slides.length) {slideIndex = 0}    
-            if (n < 0) {slideIndex = slides.length - 1}    
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";  
-            }
-            slides[slideIndex].style.display = "flex";  
-        }
-
-        function plusSlides(n) {
-            showSlides(slideIndex += n);
-        }
-
-        function showSlides2() {
-            const slides = document.getElementsByClassName("mySlides");
-            if (clickes >= slides.length) {
-                clickes = 0;
-            }
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";  
-            }
-            slides[clickes].style.display = "flex";  
-            clickes++;
-            setTimeout(showSlides2, 3000);
-        }
-
+        // Infinite scrolling
         window.addEventListener("scroll", function () {
             const scrollPosition = window.scrollY;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
             if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
-                isLoading = true; 
-                page += 1; 
-                fetchManga(page); 
+                isLoading = true; // Prevent multiple loads
+                page += 1; // Increment the page count
+                fetchManga(page); // Fetch the next page
                 isLoading = false;
             }
         });
 
+        // Error handling
         function handleError(error) {
             console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
