@@ -5,94 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
+
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
 
-        header {
-            background-color: #343a40;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+header {
+    background-color: #343a40;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        .logo h1 {
-            margin: 0;
-            font-size: 24px;
-        }
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
 
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-        }
+nav ul li {
+    margin-left: 20px;
+}
 
-        nav ul li {
-            margin-left: 20px;
-        }
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
+nav ul li a:hover {
+    text-decoration: underline;
+}
 
-        nav ul li a:hover {
-            text-decoration: underline;
-        }
+main {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        main {
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+#searchContainer {
+    margin-bottom: 20px;
+}
 
-        #searchContainer {
-            margin-bottom: 20px;
-        }
+.manga-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
 
-        .manga-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 20px;
-        }
+.manga-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: white;
+    transition: transform 0.2s;
+}
 
-        .manga-item {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            overflow: hidden;
-            background-color: white;
-            transition: transform 0.2s;
-        }
+.manga-item:hover {
+    transform: scale(1.05);
+}
 
-        .manga-item:hover {
-            transform: scale(1.05);
-        }
+.manga-item img {
+    width: 100%;
+    height: auto;
+}
 
-        .manga-item img {
-            width: 100%;
-            height: auto;
-        }
+.manga-item h3 {
+    margin: 10px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
 
-        .manga-item h3 {
-            margin: 10px;
-            font-size: 14px;
-            color: #333;
-            text-align: center;
-        }
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+}
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #343a40;
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -109,61 +107,65 @@
             </ul>
         </nav>
     </header>
+
     <main>
         <div id="searchContainer">
-            <input type="text" id="searchInput" placeholder="Search for manga..." />
+            <input type="text" id="searchInput" placeholder="Search for manga...">
             <button id="searchButton">Search</button>
         </div>
         <div id="mangaList" class="manga-list"></div>
     </main>
+
     <footer>
         <p>© 2024 AB ANIME. All rights reserved.</p>
     </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetchManga();
-            document.getElementById('searchButton').addEventListener('click', searchManga);
-        });
+    fetchManga(); // Fetch manga data when the page loads
+    document.getElementById('searchButton').addEventListener('click', searchManga);
+});
 
-        function fetchManga(page = 1) {
-            fetch(`https://ab-manga-api.vercel.app/manga?page=${page}`)
-                .then(response => response.json())
-                .then(data => displayManga(data))
-                .catch(handleError);
-        }
+function fetchManga(page = 1) {
+    fetch(`https://ab-manga-api.vercel.app/manga?page=${page}`)
+        .then(response => response.json())
+        .then(data => displayManga(data))
+        .catch(handleError);
+}
 
-        function searchManga() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (query) {
-                fetch(`https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => displayManga(data))
-                    .catch(handleError);
-            } else {
-                fetchManga(); // If no query, just fetch the manga list
-            }
-        }
+function searchManga() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+        fetch(`https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => displayManga(data))
+            .catch(handleError);
+    } else {
+        fetchManga(); // If no query, fetch the main manga list
+    }
+}
 
-        function displayManga(data) {
-            const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = ''; // Clear previous results
-            data.forEach(manga => {
-                const mangaItem = document.createElement('div');
-                mangaItem.className = 'manga-item';
-                mangaItem.innerHTML = `
-                    <a href="manga-info.html?id=${manga.id}"> <!-- Link to the manga info page -->
-                        <img src="${manga.cover}" alt="${manga.title}">
-                        <h3>${manga.title}</h3>
-                    </a>
-                `;
-                mangaList.appendChild(mangaItem);
-            });
-        }
+function displayManga(data) {
+    const mangaList = document.getElementById('mangaList');
+    mangaList.innerHTML = ''; // Clear previous results
+    data.forEach(manga => {
+        const mangaItem = document.createElement('div');
+        mangaItem.className = 'manga-item';
+        mangaItem.innerHTML = `
+            <a href="manga-info.html?id=${manga.id}">
+                <img src="${manga.cover}" alt="${manga.title}">
+                <h3>${manga.title}</h3>
+            </a>
+        `;
+        mangaList.appendChild(mangaItem);
+    });
+}
 
-        function handleError(error) {
-            console.error('Error:', error);
-            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
-        }
+function handleError(error) {
+    console.error('Error:', error);
+    document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
+}
+
     </script>
 </body>
 </html>
