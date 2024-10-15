@@ -1,5 +1,3 @@
-
-    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
- 
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
@@ -52,8 +49,7 @@
         main {
             margin: 20px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            flex-direction: column;
         }
 
         .manga-list {
@@ -134,7 +130,13 @@
             if (query) {
                 fetch(`https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`)
                     .then(response => response.json())
-                    .then(data => displayManga(data))
+                    .then(data => {
+                        if (data.length === 0) {
+                            document.getElementById('mangaList').innerHTML = '<p>No results found.</p>';
+                        } else {
+                            displayManga(data);
+                        }
+                    })
                     .catch(handleError);
             } else {
                 fetchManga(); // If no query, just fetch the manga list
@@ -148,7 +150,7 @@
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
                 mangaItem.innerHTML = `
-                    <a href="https://ab-manga-api.vercel.app/manga/${manga.manga_id}">
+                    <a href="https://ab-manga-api.vercel.app/manga/${manga.id}">
                         <img src="${manga.cover}" alt="${manga.title}">
                         <h3>${manga.title}</h3>
                     </a>
@@ -164,4 +166,3 @@
     </script>
 </body>
 </html>
-
