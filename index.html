@@ -245,7 +245,7 @@
             const mangaItem = document.createElement('div');
             mangaItem.className = 'manga-item';
 
-            // Extract cover image URL, if it's in the format you specified
+            // Extract cover image URL
             const coverUrl = extractCoverUrl(manga);
 
             if (coverUrl) {
@@ -266,11 +266,11 @@
     }
 
     function extractCoverUrl(manga) {
-        // Check if the manga has a cover property and return it
-        if (manga && manga.cover) {
-            return manga.cover; // Return the cover URL directly
+        // Check if manga is an object and contains a cover property
+        if (typeof manga === 'object' && manga !== null) {
+            return manga.cover || null; // Return the cover URL if it exists
         }
-        return null; // Return null if no cover URL is found
+        return null; // Return null if no valid object is found
     }
 
     function handleError(error) {
@@ -278,6 +278,7 @@
         document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
     }
 </script>
+
 
 </body>
 </html>
