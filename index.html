@@ -5,92 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Gallery</title>
     <style>
-
-
         body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
 
-header {
-    background-color: #343a40;
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-}
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
 
-nav ul li {
-    margin-left: 20px;
-}
+        nav ul li {
+            margin-left: 20px;
+        }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
-}
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
 
-nav ul li a:hover {
-    text-decoration: underline;
-}
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
 
-main {
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        main {
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-#searchContainer {
-    margin-bottom: 20px;
-}
+        #searchContainer {
+            margin-bottom: 20px;
+        }
 
-.manga-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-}
+        .manga-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
 
-.manga-item {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-    background-color: white;
-    transition: transform 0.2s;
-}
+        .manga-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: white;
+            transition: transform 0.2s;
+        }
 
-.manga-item:hover {
-    transform: scale(1.05);
-}
+        .manga-item:hover {
+            transform: scale(1.05);
+        }
 
-.manga-item img {
-    width: 100%;
-    height: auto;
-}
+        .manga-item img {
+            width: 100%;
+            height: auto;
+        }
 
-.manga-item h3 {
-    margin: 10px;
-    font-size: 14px;
-    color: #333;
-    text-align: center;
-}
+        .manga-item h3 {
+            margin: 10px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+        }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #343a40;
-    color: white;
-}
-
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -121,62 +118,63 @@ footer {
     </footer>
 
     <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchManga(); // Load initial manga list
-    document.getElementById('searchButton').addEventListener('click', searchManga);
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchManga(); // Load initial manga list
+            document.getElementById('searchButton').addEventListener('click', searchManga);
+        });
 
-// Function to fetch manga list
-function fetchManga(page = 1) {
-    const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
-    const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
+        // Function to fetch manga list
+        function fetchManga(page = 1) {
+            const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
+            const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
 
-    fetch(proxyUrl + encodeURIComponent(apiUrl))
-        .then(response => response.json())
-        .then(data => displayManga(data))
-        .catch(handleError);
-}
+            fetch(proxyUrl + encodeURIComponent(apiUrl))
+                .then(response => response.json())
+                .then(data => displayManga(data))
+                .catch(handleError);
+        }
 
-// Function to search manga
-function searchManga() {
-    const query = document.getElementById('searchInput').value.trim();
-    const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
-    
-    if (query) {
-        const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
-        fetch(proxyUrl + encodeURIComponent(apiUrl))
-            .then(response => response.json())
-            .then(data => displayManga(data))
-            .catch(handleError);
-    } else {
-        fetchManga(); // If no query, just fetch the manga list
-    }
-}
+        // Function to search manga
+        function searchManga() {
+            const query = document.getElementById('searchInput').value.trim();
+            const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
 
-// Function to display manga
-function displayManga(data) {
-    const mangaList = document.getElementById('mangaList');
-    mangaList.innerHTML = ''; // Clear previous results
-    data.forEach(manga => {
-        const mangaItem = document.createElement('div');
-        mangaItem.className = 'manga-item';
-        mangaItem.innerHTML = `
-            <a href="manga-info.html?id=${manga.id}">
-                <img src="${manga.cover}" alt="${manga.title}">
-                <h3>${manga.title}</h3>
-            </a>
-        `;
-        mangaList.appendChild(mangaItem);
-    });
-}
+            if (query) {
+                const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
+                fetch(proxyUrl + encodeURIComponent(apiUrl))
+                    .then(response => response.json())
+                    .then(data => displayManga(data))
+                    .catch(handleError);
+            } else {
+                fetchManga(); // If no query, just fetch the manga list
+            }
+        }
 
-// Error handling
-function handleError(error) {
-    console.error('Error:', error);
-    document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
-}
+        // Function to display manga
+        function displayManga(data) {
+            const mangaList = document.getElementById('mangaList');
+            mangaList.innerHTML = ''; // Clear previous results
 
+            data.forEach(manga => {
+                const mangaItem = document.createElement('div');
+                mangaItem.className = 'manga-item';
 
+                mangaItem.innerHTML = `
+                    <a href="manga-info.html?id=${manga.id}">
+                        <img src="${manga.cover}" alt="${manga.title}" onerror="this.onerror=null;this.src='fallback_image_url_here';">
+                        <h3>${manga.title}</h3>
+                    </a>
+                `;
+
+                mangaList.appendChild(mangaItem);
+            });
+        }
+
+        // Error handling
+        function handleError(error) {
+            console.error('Error:', error);
+            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+        }
     </script>
 </body>
 </html>
