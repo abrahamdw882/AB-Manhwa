@@ -56,7 +56,7 @@
         #searchContainer {
             display: flex;
             justify-content: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             position: relative;
             width: 100%;
         }
@@ -125,6 +125,26 @@
             color: #333;
             text-align: center;
         }
+        #sliderContainer {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .mySlides {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .mySlides img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
         footer {
             text-align: center;
             padding: 20px;
@@ -184,6 +204,15 @@
             <input type="text" id="searchInput" placeholder="Search for manga...">
             <button id="searchButton">Search</button>
         </div>
+        
+        <div id="sliderContainer">
+            <div class="mySlides"><img src="https://via.placeholder.com/600x200/ffcc00/23242a?text=Manga+1" alt="Manga 1"></div>
+            <div class="mySlides"><img src="https://via.placeholder.com/600x200/00ccff/ffffff?text=Manga+2" alt="Manga 2"></div>
+            <div class="mySlides"><img src="https://via.placeholder.com/600x200/ff6600/ffffff?text=Manga+3" alt="Manga 3"></div>
+            <div class="mySlides"><img src="https://via.placeholder.com/600x200/66ff00/23242a?text=Manga+4" alt="Manga 4"></div>
+            <div class="mySlides"><img src="https://via.placeholder.com/600x200/ff00cc/ffffff?text=Manga+5" alt="Manga 5"></div>
+        </div>
+        
         <div id="mangaList" class="manga-list"></div>
     </main>
     <footer>
@@ -191,15 +220,17 @@
     </footer>
 
     <script>
-        let page = 1; // Start at page 1
-        let isLoading = false; // To prevent multiple loads
+        let page = 1;
+        let isLoading = false;
+        let slideIndex = 0;
+        let clickes = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchManga(); // Load initial manga list
+            fetchManga();
             document.getElementById('searchButton').addEventListener('click', searchManga);
+            showSlides();
         });
 
-        // Function to fetch manga list with pagination
         function fetchManga(page = 1) {
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
             const apiUrl = `https://ab-manga-api.vercel.app/manga?page=${page}`;
@@ -210,7 +241,6 @@
                 .catch(handleError);
         }
 
-        // Function to search manga
         function searchManga() {
             const query = document.getElementById('searchInput').value.trim();
             const proxyUrl = `https://worker-tight-lake-a297.abrahamdw882.workers.dev/?u=`;
@@ -222,46 +252,55 @@
                     .then(data => displayManga(data))
                     .catch(handleError);
             } else {
-                fetchManga(); // If no query, load the default manga list
+                fetchManga();
             }
         }
 
-        // Function to display manga
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
+            mangaList.innerHTML = '';
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
-
                 mangaItem.innerHTML = `
                     <a href="manga-info.html?id=${manga.id}">
                         <img src="${manga.cover}" alt="${manga.title}">
                         <h3>${manga.title}</h3>
                     </a>
                 `;
-
                 mangaList.appendChild(mangaItem);
             });
         }
 
-        // Infinite scrolling
         window.addEventListener("scroll", function () {
             const scrollPosition = window.scrollY;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
             if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
-                isLoading = true; // Prevent multiple loads
-                page += 1; // Increment the page count
-                fetchManga(page); // Fetch the next page
+                isLoading = true;
+                page += 1;
+                fetchManga(page);
                 isLoading = false;
             }
         });
 
-        // Error handling
         function handleError(error) {
             console.error('Error:', error);
             document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+        }
+
+        function showSlides() {
+            const slides = document.getElementsByClassName("mySlides");
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {
+                slideIndex = 1;
+            }
+            slides[slideIndex - 1].style.display = "flex";
+            setTimeout(showSlides, 5000);
         }
     </script>
 </body>
