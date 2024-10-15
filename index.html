@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Gallery</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #343a40;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+main {
+    margin: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.manga-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.manga-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+.manga-item:hover {
+    transform: scale(1.05);
+}
+
+.manga-item img {
+    width: 100%;
+    height: auto;
+}
+
+.manga-item h3 {
+    margin: 10px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+}
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Manga Gallery</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Genres</a></li>
+                <li><a href="#">Latest</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div id="mangaList" class="manga-list"></div>
+    </main>
+    <footer>
+        <p>© 2024 AB ANIME. All rights reserved.</p>
+    </footer>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+    fetchManga();
+});
+
+function fetchManga() {
+    fetch('https://ab-manga-api.vercel.app/manga') // Fetch the manga list from your API
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const mangaList = document.getElementById('mangaList');
+            mangaList.innerHTML = ''; // Clear any previous results
+            data.forEach(manga => {
+                const mangaItem = document.createElement('div');
+                mangaItem.className = 'manga-item';
+                mangaItem.innerHTML = `
+                    <a href="https://ab-manga-api.vercel.app/manga/${manga.id}">
+                        <img src="${manga.cover}" alt="${manga.title}">
+                        <h3>${manga.title}</h3>
+                    </a>
+                `;
+                mangaList.appendChild(mangaItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+}
+
+    </script> <!-- Link to your JavaScript -->
+</body>
+</html>
