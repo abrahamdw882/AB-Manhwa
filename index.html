@@ -236,39 +236,28 @@
             }
         }
 
-        function displayManga(data) {
-            const mangaList = document.getElementById('mangaList');
-            data.forEach(manga => {
-                const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); 
-                const mangaItem = document.createElement('div');
-                mangaItem.className = 'manga-item';
-                mangaItem.innerHTML = `
-                    <a href="manga-info.html?id=${manga.id}">
-                        <img src="${cover}" alt="${manga.title}" style="width: 100%;">
-                        <h3>${manga.title}</h3>
-                    </a>
-                `;
-                mangaList.appendChild(mangaItem);
-            });
-        }
-
-        window.addEventListener("scroll", function () {
-            const scrollPosition = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-
-            if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
-                isLoading = true;
-                page += 1;
-                fetchManga(page);
-                isLoading = false;
-            }
-        });
-
-        function handleError(error) {
-            console.error('Error:', error);
-            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
-        }
+       function displayManga(data) {
+  const mangaList = document.getElementById('mangaList');
+  data.forEach(manga => {
+    const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, "");
+    const image = new Image();
+    image.src = cover;
+    image.onload = () => {
+      const mangaItem = document.createElement('div');
+      mangaItem.className = 'manga-item';
+      mangaItem.innerHTML = `
+        <a href="manga-info.html?id=${manga.id}">
+          <img src="${cover}" alt="${manga.title}">
+          <h3>${manga.title}</h3>
+        </a>
+      `;
+      mangaList.appendChild(mangaItem);
+    };
+    image.onerror = () => {
+      console.error('Error loading image:', cover);
+    };
+  });
+}
     </script>
 </body>
 </html>
