@@ -208,8 +208,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (isSearching) {
-                        document.getElementById('mangaList').innerHTML = ''; // Clear existing items for search
-                        isSearching = false; // Reset search flag
+                        document.getElementById('mangaList').innerHTML = ''; 
+                        isSearching = false;g
                     }
                     displayManga(data);
                 })
@@ -222,24 +222,24 @@
 
             if (query) {
                 const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
-                isSearching = true; // Set search flag
+                isSearching = true; 
                 fetch(proxyUrl + encodeURIComponent(apiUrl))
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('mangaList').innerHTML = ''; // Clear existing items for search
+                        document.getElementById('mangaList').innerHTML = ''; 
                         displayManga(data);
                     })
                     .catch(handleError);
             } else {
-                isSearching = false; // Reset search flag
-                fetchManga(); // Fetch default manga list
+                isSearching = false; 
+                fetchManga(); 
             }
         }
 
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
             data.forEach(manga => {
-                const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); // Remove dimensions if present
+                const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); 
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
                 mangaItem.innerHTML = `
