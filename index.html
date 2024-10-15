@@ -193,6 +193,7 @@
     <script>
         let page = 1;
         let isLoading = false;
+        let isSearching = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchManga();
@@ -205,7 +206,13 @@
 
             fetch(proxyUrl + encodeURIComponent(apiUrl))
                 .then(response => response.json())
-                .then(data => displayManga(data))
+                .then(data => {
+                    if (isSearching) {
+                        document.getElementById('mangaList').innerHTML = ''; // Clear existing items for search
+                        isSearching = false; // Reset search flag
+                    }
+                    displayManga(data);
+                })
                 .catch(handleError);
         }
 
@@ -215,18 +222,22 @@
 
             if (query) {
                 const apiUrl = `https://ab-manga-api.vercel.app/search/${encodeURIComponent(query)}`;
+                isSearching = true; // Set search flag
                 fetch(proxyUrl + encodeURIComponent(apiUrl))
                     .then(response => response.json())
-                    .then(data => displayManga(data))
+                    .then(data => {
+                        document.getElementById('mangaList').innerHTML = ''; // Clear existing items for search
+                        displayManga(data);
+                    })
                     .catch(handleError);
             } else {
-                fetchManga();
+                isSearching = false; // Reset search flag
+                fetchManga(); // Fetch default manga list
             }
         }
 
         function displayManga(data) {
             const mangaList = document.getElementById('mangaList');
-            mangaList.innerHTML = ''; // Clear existing items
             data.forEach(manga => {
                 const mangaItem = document.createElement('div');
                 mangaItem.className = 'manga-item';
