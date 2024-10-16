@@ -258,6 +258,21 @@
     };
   });
 }
+        window.addEventListener("scroll", function () {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            if (scrollPosition + 3 * windowHeight >= documentHeight && !isLoading) {
+                isLoading = true;
+                page += 1;
+                fetchManga(page);
+                isLoading = false;
+            }
+        });
+        function handleError(error) {
+            console.error('Error:', error);
+            document.getElementById('mangaList').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+        }
     </script>
 </body>
 </html>
