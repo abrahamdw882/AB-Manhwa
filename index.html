@@ -235,21 +235,28 @@
                 fetchManga(); 
             }
         }
-   function displayManga(data) {
-            const mangaList = document.getElementById('mangaList');
-            data.forEach(manga => {
-                const cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); 
-                const mangaItem = document.createElement('div');
-                mangaItem.className = 'manga-item';
-                mangaItem.innerHTML = `
-                    <a href="manga-info.html?id=${manga.id}">
-                        <img src="${cover}" alt="${manga.title}" style="width: 100%;">
-                        <h3>${manga.title}</h3>
-                    </a>
-                `;
-                mangaList.appendChild(mangaItem);
-            });
-        }
+       function displayManga(data) {
+        const mangaList = document.getElementById('mangaList');
+        data.forEach(manga => {
+            let cover = manga.cover.replace(/-\d+x\d+(?=\.\w+$)/, ""); // Ensure the image isn't resized
+
+            // Handle the case where the image URL doesn't end in .jpg or .png
+            if (!cover.match(/\.(jpg|jpeg|png)$/)) {
+                cover += ".jpg"; // Default to .jpg if no valid extension
+            }
+
+            const mangaItem = document.createElement('div');
+            mangaItem.className = 'manga-item';
+            mangaItem.innerHTML = `
+                <a href="manga-info.html?id=${manga.id}">
+                    <img src="${cover}" alt="${manga.title}" style="width: 100%;">
+                    <h3>${manga.title}</h3>
+                </a>
+            `;
+            mangaList.appendChild(mangaItem);
+        });
+    }
+
         window.addEventListener("scroll", function () {
             const scrollPosition = window.scrollY;
             const windowHeight = window.innerHeight;
